@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+
+permissions:
+  contents: read
 # Thin caller that adopts the phenoShared reusable Rust CI workflow.
 # Pinned to HEAD SHA of KooshaPari/phenoShared@main until PR #85 merges and
 # exposes `.github/workflows/reusable/ci.yml`. Once merged, re-pin to a tag
