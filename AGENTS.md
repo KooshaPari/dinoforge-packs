@@ -4,9 +4,12 @@ This file governs work inside the dinoforge-packs repository.
 
 ## Identity
 
-dinoforge-packs is a [brief description of purpose and role in Phenotype ecosystem].
+dinoforge-packs is the DINOForge resource-pack repository for content packs
+consumed by the DINOForge framework.
 
-Do not apply parent shelf instructions (`/Users/kooshapari/CodeProjects/Phenotype/repos/AGENTS.md`) unless explicitly referenced. Work from this directory and treat paths as local to dinoforge-packs.
+Follow the parent shelf instructions in
+`/Users/kooshapari/CodeProjects/Phenotype/repos/AGENTS.md` where they apply.
+Use this file for repo-specific guidance.
 
 ## Required Operating Loop
 
