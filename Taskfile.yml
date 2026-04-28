@@ -1,6 +1,7 @@
 version: "3"
 
 vars:
+  GO_CACHE_DIR: "{{.ROOT_DIR}}/.task/go-build-cache"
   DETECTED_LANGUAGE:
     sh: |
       if rg --files -g 'go.mod' -g '*.go' | grep -q .; then
@@ -51,7 +52,7 @@ tasks:
       - |
         case "{{.DETECTED_LANGUAGE}}" in
           go)
-            GO111MODULE=off go test -run '^$' ./...
+            GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go test -run '^$' ./...
             ;;
           rust)
             cargo build --workspace
@@ -77,7 +78,7 @@ tasks:
       - |
         case "{{.DETECTED_LANGUAGE}}" in
           go)
-            GO111MODULE=off go test ./...
+            GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go test ./...
             ;;
           rust)
             cargo test --workspace
@@ -127,12 +128,10 @@ tasks:
   clean:
     desc: Remove generated caches and build artifacts
     cmds:
-      - rm -rf .task .pytest_cache .mypy_cache .ruff_cache .coverage coverage.out
-      - find . -name '*.test' -type f -delete
       - |
         case "{{.DETECTED_LANGUAGE}}" in
           go)
-            GO111MODULE=off go clean -testcache
+            GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go clean -testcache
             ;;
           rust)
             cargo clean
@@ -150,3 +149,5 @@ tasks:
             exit 1
             ;;
         esac
+      - rm -rf .task .pytest_cache .mypy_cache .ruff_cache .coverage coverage.out
+      - find . -name '*.test' -type f -delete
