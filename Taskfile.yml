@@ -2,6 +2,7 @@ version: "3"
 
 vars:
   GO_CACHE_DIR: "{{.ROOT_DIR}}/.task/go-build-cache"
+  YAML_LINT_CONFIG: "{extends: relaxed, rules: {line-length: {max: 240}, document-start: disable, truthy: disable}}"
   DETECTED_LANGUAGE:
     sh: |
       if rg --files -g 'go.mod' -g '*.go' -g '!tests/**' | grep -q .; then
@@ -26,6 +27,11 @@ vars:
       fi
 
 tasks:
+  default:
+    desc: List available repository tasks
+    cmds:
+      - task --list
+
   detect-language:
     desc: Detect the primary language or toolchain in this repository
     cmds:
@@ -119,7 +125,7 @@ tasks:
       - |
         case "{{.DETECTED_LANGUAGE}}" in
           go)
-            yamllint -d '{extends: relaxed, rules: {line-length: {max: 240}, document-start: disable, truthy: disable}}' .
+            yamllint -d '{{.YAML_LINT_CONFIG}}' .
             ;;
           rust)
             cargo fmt --check
@@ -132,7 +138,7 @@ tasks:
             python -m ruff check .
             ;;
           yaml)
-            yamllint -d '{extends: relaxed, rules: {line-length: {max: 240}, document-start: disable, truthy: disable}}' .
+            yamllint -d '{{.YAML_LINT_CONFIG}}' .
             ;;
           *)
             echo "Unsupported repository language: {{.DETECTED_LANGUAGE}}"
