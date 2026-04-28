@@ -2,6 +2,7 @@ version: "3"
 
 vars:
   GO_CACHE_DIR: "{{.ROOT_DIR}}/.task/go-build-cache"
+  GO_TMP_DIR: "{{.ROOT_DIR}}/.task/go-tmp"
   YAML_LINT_CONFIG: "{extends: relaxed, rules: {line-length: {max: 240}, document-start: disable, truthy: disable}}"
   DETECTED_LANGUAGE:
     sh: |
@@ -67,7 +68,8 @@ tasks:
       - |
         case "{{.DETECTED_LANGUAGE}}" in
           go)
-            GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go test -run '^$' ./...
+            mkdir -p "{{.GO_CACHE_DIR}}" "{{.GO_TMP_DIR}}"
+            GOCACHE="{{.GO_CACHE_DIR}}" GOTMPDIR="{{.GO_TMP_DIR}}" GO111MODULE=off go test -run '^$' ./...
             ;;
           rust)
             cargo build --workspace
@@ -80,7 +82,8 @@ tasks:
             ;;
           yaml)
             if [ -n "{{.GO_TEST_PACKAGES}}" ]; then
-              GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go test -run '^$' {{.GO_TEST_PACKAGES}}
+              mkdir -p "{{.GO_CACHE_DIR}}" "{{.GO_TMP_DIR}}"
+              GOCACHE="{{.GO_CACHE_DIR}}" GOTMPDIR="{{.GO_TMP_DIR}}" GO111MODULE=off go test -run '^$' {{.GO_TEST_PACKAGES}}
             fi
             ;;
           *)
@@ -96,7 +99,8 @@ tasks:
       - |
         case "{{.DETECTED_LANGUAGE}}" in
           go)
-            GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go test ./...
+            mkdir -p "{{.GO_CACHE_DIR}}" "{{.GO_TMP_DIR}}"
+            GOCACHE="{{.GO_CACHE_DIR}}" GOTMPDIR="{{.GO_TMP_DIR}}" GO111MODULE=off go test ./...
             ;;
           rust)
             cargo test --workspace
@@ -109,7 +113,8 @@ tasks:
             ;;
           yaml)
             if [ -n "{{.GO_TEST_PACKAGES}}" ]; then
-              GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go test {{.GO_TEST_PACKAGES}}
+              mkdir -p "{{.GO_CACHE_DIR}}" "{{.GO_TMP_DIR}}"
+              GOCACHE="{{.GO_CACHE_DIR}}" GOTMPDIR="{{.GO_TMP_DIR}}" GO111MODULE=off go test {{.GO_TEST_PACKAGES}}
             fi
             ;;
           *)
@@ -152,7 +157,7 @@ tasks:
       - |
         case "{{.DETECTED_LANGUAGE}}" in
           go)
-            GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go clean -testcache
+            GOCACHE="{{.GO_CACHE_DIR}}" GOTMPDIR="{{.GO_TMP_DIR}}" GO111MODULE=off go clean -testcache
             ;;
           rust)
             cargo clean
