@@ -1,6 +1,6 @@
 # Work Audit — dinoforge-packs
 
-**Index:** See `/Users/kooshapari/CodeProjects/Phenotype/repos/worklogs/README.md`
+**Index:** Use the local worklog files under `docs/worklogs/` and the project `README.md` as the canonical entry point.
 
 ## Purpose
 
