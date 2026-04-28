@@ -4,7 +4,7 @@ vars:
   GO_CACHE_DIR: "{{.ROOT_DIR}}/.task/go-build-cache"
   DETECTED_LANGUAGE:
     sh: |
-      if rg --files -g 'go.mod' -g '*.go' | grep -q .; then
+      if rg --files -g 'go.mod' -g '*.go' -g '!tests/**' | grep -q .; then
         printf 'go'
       elif rg --files -g 'Cargo.toml' -g '*.rs' | grep -q .; then
         printf 'rust'
@@ -12,8 +12,17 @@ vars:
         printf 'node'
       elif rg --files -g 'pyproject.toml' -g 'requirements.txt' -g '*.py' | grep -q .; then
         printf 'python'
+      elif rg --files -g 'pack.yaml' -g 'manifest.yaml' -g '*.yml' -g '*.yaml' | grep -q .; then
+        printf 'yaml'
+      elif rg --files -g 'go.mod' -g '*.go' | grep -q .; then
+        printf 'go'
       else
         printf 'yaml'
+      fi
+  GO_TEST_PACKAGES:
+    sh: |
+      if rg --files -g 'go.mod' -g '*.go' | grep -q .; then
+        go list ./... 2>/dev/null || printf './...'
       fi
 
 tasks:
@@ -27,7 +36,7 @@ tasks:
     silent: true
     cmds:
       - |
-        rg --files -g '*.yml' -g '*.yaml' | while IFS= read -r file; do
+        rg --files -g '*.yml' -g '*.yaml' -g '!node_modules/**' | while IFS= read -r file; do
           yq '.' "$file" >/dev/null
         done
 
@@ -64,6 +73,9 @@ tasks:
             python -m compileall .
             ;;
           yaml)
+            if [ -n "{{.GO_TEST_PACKAGES}}" ]; then
+              GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go test -run '^$' {{.GO_TEST_PACKAGES}}
+            fi
             ;;
           *)
             echo "Unsupported repository language: {{.DETECTED_LANGUAGE}}"
@@ -90,6 +102,9 @@ tasks:
             python -m pytest
             ;;
           yaml)
+            if [ -n "{{.GO_TEST_PACKAGES}}" ]; then
+              GOCACHE="{{.GO_CACHE_DIR}}" GO111MODULE=off go test {{.GO_TEST_PACKAGES}}
+            fi
             ;;
           *)
             echo "Unsupported repository language: {{.DETECTED_LANGUAGE}}"
