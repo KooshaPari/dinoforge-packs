@@ -53,5 +53,3 @@ Each entry should include:
 ```
 
 ---
-
-See parent worklog index at `/Users/kooshapari/CodeProjects/Phenotype/repos/worklogs/README.md` for aggregation tools and cross-project analysis.
